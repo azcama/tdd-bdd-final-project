@@ -110,11 +110,11 @@ def create_products():
 #
 # PLACE YOUR CODE HERE TO READ A PRODUCT
 #
-@app.route("/products/<product_id>", methods=["GET"])
+@app.route("/products/<int:product_id>", methods=["GET"])
 def get_products(product_id: int):
     """
     Read a Product
-    This endpoint will read a Product based the data in the body that is posted
+    This endpoint will read a Product
     """
     app.logger.info("Request to Read a Product...")
 
@@ -136,6 +136,28 @@ def get_products(product_id: int):
 #
 # PLACE YOUR CODE TO UPDATE A PRODUCT HERE
 #
+@app.route("/products/<int:product_id>", methods=["PUT"])
+def update_products(product_id: int):
+    """
+    Update a Product
+    This endpoint will update a Product based the data in the body that is posted
+    """
+    app.logger.info("Request to Update a Product...")
+    check_content_type("application/json")
+
+    product = Product.find(product_id)
+    if not product:
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
+    
+    product.deserialize(request.get_json())
+    product.id = product_id
+    product.update()
+
+    app.logger.info("Product with id [%s] updated!", product.id)
+
+    return product.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # D E L E T E   A   P R O D U C T
