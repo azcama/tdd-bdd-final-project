@@ -213,7 +213,23 @@ class TestProductModel(unittest.TestCase):
     def test_deserialize_a_product_with_no_valid_availability(self):
         """It should raise an exception when we try to deserialize a product with an invalid availability"""
         product = ProductFactory()
-        product_dict = {"available": "False"}
+        product_dict = product.serialize()
+        product_dict["available"] = None
+        with self.assertRaises(DataValidationError):
+            product.deserialize(product_dict)
+
+    def test_deserialize_a_product_with_attribute_error_exception(self):
+        """It should raise an exception when we try to deserialize a product with a wrong attribute"""
+        product = ProductFactory()
+        product_dict = product.serialize()
+        product_dict["category"] = "NON_EXISTENT_OPTION"
+        with self.assertRaises(DataValidationError):
+            product.deserialize(product_dict)
+
+    def test_deserialize_a_product_with_type_error_exception(self):
+        """It should raise an exception when we try to deserialize a product with None information"""
+        product = ProductFactory()
+        product_dict = None
         with self.assertRaises(DataValidationError):
             product.deserialize(product_dict)
 
