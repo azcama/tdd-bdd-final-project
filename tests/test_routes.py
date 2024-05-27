@@ -224,7 +224,7 @@ class TestProductRoutes(TestCase):
         """It should read all the products that we have just created by a availability."""
         elements = 10
         products = self._create_products(elements)
-        test_available = products[0].available
+        test_available = True
         test_elements = len(
             [product for product in products if product.available == test_available]
         )
@@ -232,6 +232,8 @@ class TestProductRoutes(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), test_elements)
+        for product in data:
+            self.assertEqual(product["available"], test_available)
 
     def test_update_product(self):
         """It should update a product that exist in the db."""
